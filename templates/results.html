@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <link rel="icon" type="image/x-icon" href="../static/10262827.png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="dashboard-container">
@@ -40,6 +41,7 @@
                 </div>
 
                 <!-- KPIs -->
+
                 <div id="kpis" class="section" data-aos="fade-up" data-aos-duration="800">
                     <h2>📈 Indicadores Clave (KPIs)</h2>
                     <div class="grid-container">
@@ -51,7 +53,13 @@
                         {% endfor %}
                     </div>
                 </div>
-
+        
+                <!-- Gráfico -->
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <canvas id="kpiChart" width="300" height="300"></canvas>
+                    </div>
+                </div>
                 <!-- Análisis Detallado -->
                 <div id="detailed-analysis" class="section" data-aos="fade-up" data-aos-duration="800">
                     <h2>🔍 Análisis Detallado</h2>
@@ -123,11 +131,78 @@
                 </div>
             </section>
         </div>
-    </div>
+    </div> 
+    
+    <script>
+
+        // Los datos se insertan como JSON en el frontend
+        const chartData = JSON.parse('{{ chart_data_kpi | tojson | safe }}');
+    
+        // Extraer etiquetas y valores del JSON
+        const chartLabels = chartData.labels;
+        const chartValues = chartData.values;
+    
+        // Inicializar el gráfico de Chart.js
+        (function () {
+            if (document.getElementById('kpiChart')) {
+                const ctx = document.getElementById('kpiChart').getContext('2d');
+                
+                // Verificar si el gráfico ya existe y destruirlo
+                if (window.kpiChartInstance) {
+                    window.kpiChartInstance.destroy();
+                }
+    
+                window.kpiChartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: chartLabels,
+        datasets: [{
+            label: 'Perfiles por Categoría',
+            data: chartValues,
+            backgroundColor: [
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(255, 99, 132, 0.2)'
+            ],
+            borderColor: [
+                'rgba(75, 192, 192, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(255, 99, 132, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,  // Esto es importante para controlar el tamaño con el CSS
+        cutoutPercentage: 60,
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        return tooltipItem.label + ': ' + tooltipItem.raw + ' perfiles';
+                    }
+                }
+            }
+        }
+    }
+});
+            }
+        })();
+    
+      </script>
+    
 </body>
 
-<script src="../static/script/script.js"></script>}
+<script src="../static/script/script.js"></script>
 <script>
     AOS.init();
   </script>
+
+ 
 </html>

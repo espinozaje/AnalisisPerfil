@@ -219,7 +219,20 @@ def index():
             'Perfiles Baja Calidad': len(data[data['category'] == 'Baja calidad']),
         }
 
-        return render_template('results.html', kpis=kpis, plots=plots, quality_summary=quality_stats, outlier_summary=outlier_summary)
+        # Crear los datos para el gráfico
+        chart_data_kpi = {
+            'labels': ['Alta Calidad', 'Media Calidad', 'Baja Calidad'],
+            'values': [kpis['Perfiles Alta Calidad'], kpis['Perfiles Media Calidad'], kpis['Perfiles Baja Calidad']]
+        }
+
+        return render_template(
+            'results.html',
+            kpis=kpis,
+            plots=plots,
+            quality_summary=quality_stats,
+            outlier_summary=outlier_summary,
+            chart_data_kpi=chart_data_kpi
+        )
 
     return render_template('index.html')
 
