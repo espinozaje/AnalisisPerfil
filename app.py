@@ -6,6 +6,10 @@ from io import BytesIO
 import chardet
 import base64
 import ast
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error
+import joblib
 
 app = Flask(__name__)
 
@@ -54,6 +58,61 @@ def calculate_quality_stats(data):
         "Media de Columnas Numéricas": mean_values,
         "Desviación Estándar de Columnas Numéricas": std_values,
     }
+
+# Función para entrenar el modelo Random Forest
+def train_random_forest_model(data):
+    # Seleccionar las columnas características (features)
+    features = ['repositories', 'stars', 'followers', 'followings', 'num_experiences', 
+                'num_educations', 'num_certifications', 'num_recommendations', 'has_summary', 'has_photo']
+
+    data = data.dropna(subset=features + ['quality_score'])
+    
+    X = data[features]  # Características (features)
+    y = data['quality_score']  # Objetivo (target)
+
+    # Dividir los datos en entrenamiento y prueba
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Crear el modelo Random Forest
+    model = RandomForestRegressor(n_estimators=100, random_state=42)
+
+    # Entrenar el modelo
+    model.fit(X_train, y_train)
+
+    # Predecir en el conjunto de prueba
+    y_pred = model.predict(X_test)
+
+    # Evaluar el modelo
+    mae = mean_absolute_error(y_test, y_pred)
+    print(f"Error absoluto medio: {mae:.2f}")
+
+    # Guardar el modelo entrenado en un archivo
+    joblib.dump(model, 'random_forest_model.pkl')
+
+    return model
+
+# Función para cargar el modelo entrenado y hacer predicciones
+def predict_with_random_forest(data):
+    # Cargar el modelo guardado
+    model = joblib.load('random_forest_model.pkl')
+
+    # Seleccionar las mismas columnas características
+    features = ['repositories', 'stars', 'followers', 'followings', 'num_experiences', 
+                'num_educations', 'num_certifications', 'num_recommendations', 'has_summary', 'has_photo']
+    
+    # Preprocesar los datos (asegurarse de que no haya valores nulos en las características)
+    data = data.dropna(subset=features)
+    
+    # Predecir los scores de calidad
+    predictions = model.predict(data[features])
+
+    # Agregar las predicciones al DataFrame
+    data['predicted_quality_score'] = predictions
+    
+    # Clasificar las predicciones
+    data['predicted_category'] = data['predicted_quality_score'].apply(lambda score: "Alta calidad" if score >= 50 else "Media calidad" if score >= 30 else "Baja calidad")
+    
+    return data
 
 # Función para calcular valores atípicos
 def calculate_outliers(data):
@@ -175,6 +234,8 @@ def generate_graphs(data):
     plots['Mapa de Correlaciones'] = base64.b64encode(buffer.getvalue()).decode('utf-8')
     plt.close()
 
+
+
     return plots
 
 # Función principal de análisis
@@ -184,6 +245,12 @@ def analyze_data(file_path):
     outlier_summary = calculate_outliers(data)
     data = process_columns(data)
     data = calculate_custom_metrics(data)
+        # Entrenar el modelo de Random Forest
+    model = train_random_forest_model(data)
+
+    # Realizar las predicciones
+    data = predict_with_random_forest(data)
+    
     plots = generate_graphs(data)
     return data, plots, quality_stats, outlier_summary
 

@@ -125,6 +125,13 @@
                     </div>
                 </div>
 
+                <h1>Subir archivo para predicción</h1>
+                <form action="/predict" method="POST" enctype="multipart/form-data">
+                    <label for="csv_file">Selecciona un archivo CSV:</label>
+                    <input type="file" id="csv_file" name="csv_file" accept=".csv" required>
+                    <button type="submit">Predecir</button>
+                </form>                
+
                 <div id="image-modal" class="modal">
                     <span class="close" onclick="closeModal()">&times;</span>
                     <img class="modal-content" id="modal-img" />
