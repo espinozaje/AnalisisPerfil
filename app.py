@@ -175,21 +175,6 @@ def generate_graphs(data):
     plots['Mapa de Correlaciones'] = base64.b64encode(buffer.getvalue()).decode('utf-8')
     plt.close()
 
-    # Gráfico de pastel para columnas completas e incompletas
-    missing_count = data.isnull().sum()
-    complete_count = len(data) - missing_count
-    labels = ['Completas', 'Incompletas']
-    sizes = [complete_count.sum(), missing_count.sum()]
-    colors = ['#4CAF50', '#FF7043']
-    plt.figure(figsize=(8, 6))
-    plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140, colors=colors)
-    plt.title('Porcentaje de Columnas Completas e Incompletas')
-    buffer = BytesIO()
-    plt.savefig(buffer, format='png')
-    buffer.seek(0)
-    plots['Porcentaje Completas/Incompletas'] = base64.b64encode(buffer.getvalue()).decode('utf-8')
-    plt.close()
-
     return plots
 
 # Función principal de análisis
