@@ -5,14 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resultados del Análisis</title>
     <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="dashboard-container">
         <header class="dashboard-header">
-            <h1>Resultados del Análisis</h1>
+            <div class="header-title">
+                <h1>📊 Resultados del Análisis</h1>
+            </div>
         </header>
         <div class="dashboard-main">
             <aside class="dashboard-sidebar">
+                <h3>Navegación</h3>
                 <ul>
                     <li><a href="#summary">Resumen</a></li>
                     <li><a href="#kpis">KPIs</a></li>
@@ -24,30 +28,30 @@
             <section class="dashboard-content">
                 <!-- Resumen -->
                 <div id="summary" class="section">
-                    <h2>Resumen</h2>
-                    <ul>
-                        <li>Valores Faltantes Totales: {{ quality_summary['Valores Faltantes Totales'] }}</li>
-                        <li>Porcentaje de Valores Faltantes: {{ quality_summary['Porcentaje de Valores Faltantes'] }}</li>
-                        <li>Filas Duplicadas: {{ quality_summary['Filas Duplicadas'] }}</li>
+                    <h2>📄 Resumen</h2>
+                    <ul class="summary-list">
+                        <li><strong>Valores Faltantes Totales:</strong> {{ quality_summary['Valores Faltantes Totales'] }}</li>
+                        <li><strong>Porcentaje de Valores Faltantes:</strong> {{ quality_summary['Porcentaje de Valores Faltantes'] }}</li>
+                        <li><strong>Filas Duplicadas:</strong> {{ quality_summary['Filas Duplicadas'] }}</li>
                     </ul>
                 </div>
 
                 <!-- KPIs -->
                 <div id="kpis" class="section">
-                    <h2>KPIs</h2>
+                    <h2>📈 Indicadores Clave (KPIs)</h2>
                     <div class="grid-container">
                         {% for kpi, value in kpis.items() %}
-                            <div class="card">
-                                <h3>{{ kpi }}</h3>
-                                <p>{{ value }}</p>
-                            </div>
+                        <div class="card">
+                            <h3>{{ kpi }}</h3>
+                            <p>{{ value }}</p>
+                        </div>
                         {% endfor %}
                     </div>
                 </div>
 
                 <!-- Análisis Detallado -->
                 <div id="detailed-analysis" class="section">
-                    <h2>Análisis de Calidad Detallado</h2>
+                    <h2>🔍 Análisis Detallado</h2>
                     <div class="grid-container">
                         <div class="card">
                             <h3>Columnas No Numéricas</h3>
@@ -66,7 +70,7 @@
                             </ul>
                         </div>
                         <div class="card">
-                            <h3>Desviación Estándar de Columnas Numéricas</h3>
+                            <h3>Desviación Estándar</h3>
                             <ul>
                                 {% for column, value in quality_summary['Desviación Estándar de Columnas Numéricas'].items() %}
                                 <li>{{ column }}: {{ value }}</li>
@@ -78,7 +82,7 @@
 
                 <!-- Valores Atípicos -->
                 <div id="outliers" class="section">
-                    <h2>Valores Atípicos</h2>
+                    <h2>🚩 Valores Atípicos</h2>
                     <table>
                         <thead>
                             <tr>
@@ -99,18 +103,25 @@
 
                 <!-- Gráficas -->
                 <div id="charts" class="section">
-                    <h2>Gráficas</h2>
+                    <h2>📊 Gráficas</h2>
                     <div class="grid-container">
                         {% for name, img in plots.items() %}
-                            <div class="card">
-                                <h3>{{ name }}</h3>
-                                <img src="data:image/png;base64,{{ img }}" alt="{{ name }}">
-                            </div>
+                        <div class="card">
+                            <h3>{{ name }}</h3>
+                            <img src="data:image/png;base64,{{ img }}" alt="{{ name }}" class="thumbnail" onclick="openModal(this.src)">
+                        </div>
                         {% endfor %}
                     </div>
+                </div>
+
+                <div id="image-modal" class="modal">
+                    <span class="close" onclick="closeModal()">&times;</span>
+                    <img class="modal-content" id="modal-img" />
                 </div>
             </section>
         </div>
     </div>
 </body>
+
+<script src="../static/script/script.js"></script>
 </html>
