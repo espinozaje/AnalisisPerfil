@@ -6,6 +6,9 @@
     <title>Resultados del Análisis</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <link rel="icon" type="image/x-icon" href="../static/10262827.png">
 </head>
 <body>
     <div class="dashboard-container">
@@ -27,7 +30,7 @@
             </aside>
             <section class="dashboard-content">
                 <!-- Resumen -->
-                <div id="summary" class="section">
+                <div id="summary" class="section" data-aos="fade-up" data-aos-duration="800">
                     <h2>📄 Resumen</h2>
                     <ul class="summary-list">
                         <li><strong>Valores Faltantes Totales:</strong> {{ quality_summary['Valores Faltantes Totales'] }}</li>
@@ -37,7 +40,7 @@
                 </div>
 
                 <!-- KPIs -->
-                <div id="kpis" class="section">
+                <div id="kpis" class="section" data-aos="fade-up" data-aos-duration="800">
                     <h2>📈 Indicadores Clave (KPIs)</h2>
                     <div class="grid-container">
                         {% for kpi, value in kpis.items() %}
@@ -50,7 +53,7 @@
                 </div>
 
                 <!-- Análisis Detallado -->
-                <div id="detailed-analysis" class="section">
+                <div id="detailed-analysis" class="section" data-aos="fade-up" data-aos-duration="800">
                     <h2>🔍 Análisis Detallado</h2>
                     <div class="grid-container">
                         <div class="card">
@@ -81,7 +84,7 @@
                 </div>
 
                 <!-- Valores Atípicos -->
-                <div id="outliers" class="section">
+                <div id="outliers" class="section" data-aos="fade-up" data-aos-duration="800">
                     <h2>🚩 Valores Atípicos</h2>
                     <table>
                         <thead>
@@ -102,7 +105,7 @@
                 </div>
 
                 <!-- Gráficas -->
-                <div id="charts" class="section">
+                <div id="charts" class="section" data-aos="fade-up" data-aos-duration="800">
                     <h2>📊 Gráficas</h2>
                     <div class="grid-container">
                         {% for name, img in plots.items() %}
@@ -123,5 +126,8 @@
     </div>
 </body>
 
-<script src="../static/script/script.js"></script>
+<script src="../static/script/script.js"></script>}
+<script>
+    AOS.init();
+  </script>
 </html>
