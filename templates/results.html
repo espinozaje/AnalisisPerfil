@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados del Análisis</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1>Resultados del Análisis</h1>
+        </header>
+        <div class="dashboard-main">
+            <aside class="dashboard-sidebar">
+                <ul>
+                    <li><a href="#summary">Resumen</a></li>
+                    <li><a href="#kpis">KPIs</a></li>
+                    <li><a href="#detailed-analysis">Análisis Detallado</a></li>
+                    <li><a href="#outliers">Valores Atípicos</a></li>
+                    <li><a href="#charts">Gráficas</a></li>
+                </ul>
+            </aside>
+            <section class="dashboard-content">
+                <!-- Resumen -->
+                <div id="summary" class="section">
+                    <h2>Resumen</h2>
+                    <ul>
+                        <li>Valores Faltantes Totales: {{ quality_summary['Valores Faltantes Totales'] }}</li>
+                        <li>Porcentaje de Valores Faltantes: {{ quality_summary['Porcentaje de Valores Faltantes'] }}</li>
+                        <li>Filas Duplicadas: {{ quality_summary['Filas Duplicadas'] }}</li>
+                    </ul>
+                </div>
+
+                <!-- KPIs -->
+                <div id="kpis" class="section">
+                    <h2>KPIs</h2>
+                    <div class="grid-container">
+                        {% for kpi, value in kpis.items() %}
+                            <div class="card">
+                                <h3>{{ kpi }}</h3>
+                                <p>{{ value }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Análisis Detallado -->
+                <div id="detailed-analysis" class="section">
+                    <h2>Análisis de Calidad Detallado</h2>
+                    <div class="grid-container">
+                        <div class="card">
+                            <h3>Columnas No Numéricas</h3>
+                            <ul>
+                                {% for column in quality_summary['Columnas No Numéricas'] %}
+                                <li>{{ column }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h3>Media de Columnas Numéricas</h3>
+                            <ul>
+                                {% for column, value in quality_summary['Media de Columnas Numéricas'].items() %}
+                                <li>{{ column }}: {{ value }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h3>Desviación Estándar de Columnas Numéricas</h3>
+                            <ul>
+                                {% for column, value in quality_summary['Desviación Estándar de Columnas Numéricas'].items() %}
+                                <li>{{ column }}: {{ value }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Valores Atípicos -->
+                <div id="outliers" class="section">
+                    <h2>Valores Atípicos</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Columna</th>
+                                <th>Número de Valores Atípicos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for column, count in outlier_summary.items() %}
+                            <tr>
+                                <td>{{ column }}</td>
+                                <td>{{ count }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Gráficas -->
+                <div id="charts" class="section">
+                    <h2>Gráficas</h2>
+                    <div class="grid-container">
+                        {% for name, img in plots.items() %}
+                            <div class="card">
+                                <h3>{{ name }}</h3>
+                                <img src="data:image/png;base64,{{ img }}" alt="{{ name }}">
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+</html>
