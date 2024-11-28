@@ -288,6 +288,59 @@ def index():
 
     return render_template('index.html')
 
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    # Cargar el modelo guardado
+    try:
+        model = joblib.load('random_forest_model.pkl')
+    except FileNotFoundError:
+        return "El modelo no está entrenado o no se encuentra disponible.", 400
+
+    # Características requeridas
+    features = ['repositories', 'stars', 'followers', 'followings', 'num_experiences', 
+                'num_educations', 'num_certifications', 'num_recommendations', 'has_summary', 'has_photo']
+
+    # Procesar el archivo subido
+    file = request.files.get('csv_file')
+    if not file:
+        return "No se subió ningún archivo.", 400
+
+    file_path = 'uploaded_file_predict.csv'
+    file.save(file_path)
+
+    try:
+        data = pd.read_csv(file_path)
+    except Exception as e:
+        return f"Error al leer el archivo CSV: {str(e)}", 400
+
+    # Preprocesar columnas específicas para manejar valores como "3.1k"
+    data = process_columns(data)
+
+    # Validar columnas faltantes y rellenarlas
+    for feature in features:
+        if feature not in data.columns:
+            data[feature] = 0
+
+    # Asegurarse de que no haya valores nulos en las características
+    data = data.fillna(0)
+
+    # Realizar las predicciones
+    try:
+        predictions = model.predict(data[features])
+        data['predicted_quality_score'] = predictions
+        data['predicted_category'] = data['predicted_quality_score'].apply(
+            lambda score: "Alta calidad" if score >= 50 else "Media calidad" if score >= 30 else "Baja calidad"
+        )
+    except Exception as e:
+        return f"Error al realizar predicciones: {str(e)}", 500
+
+    # Guardar los resultados en un archivo CSV
+    output_path = 'predicciones.xlsx'
+    data.to_excel(output_path, index=False)
+
+    return send_file(output_path, as_attachment=True)
+
 @app.route('/download_csv')
 def download_csv():
     data, _, _, _ = analyze_data('uploaded_file.csv')
